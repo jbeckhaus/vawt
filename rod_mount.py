@@ -11,6 +11,7 @@ thread_major_diameter = 33 * MM
 thread_minor_diameter = 29.211 * MM
 thread_pitch = 3.5 * MM
 thread_angle = 60
+thread_wiggle_room = 0.4 * MM
 
 base_plate_thickness = 2 * MM
 top_cover_thickness = 2 * MM
@@ -27,7 +28,8 @@ assert outer_diameter > thread_major_diameter
 
 with BuildPart() as rod_top:
     
-    r_helix = thread_minor_diameter / 2
+    actual_minor_diameter = thread_minor_diameter + thread_wiggle_room
+    r_helix = (actual_minor_diameter - 0.01 * MM) / 2
 
     Cone(
         bottom_radius=outer_diameter/2,
@@ -39,23 +41,28 @@ with BuildPart() as rod_top:
     with BuildLine() as path:
         Helix(pitch=thread_pitch, height=rod_thread_length, radius=r_helix)
     
-    with BuildSketch(path.line ^ 0) as thread_tooth:
-        thread_depth = (thread_major_diameter - thread_minor_diameter) / 2 
+    with BuildSketch(path.line ^ 0) as thread_tooth: 
+        thread_depth = (thread_major_diameter - actual_minor_diameter) / 2    
         trapezoid_angle = 90 - (thread_angle/2)
         angle_space = thread_depth / math.tan(math.radians(trapezoid_angle))
         root = (thread_pitch - 2 * angle_space ) / 2
         bottom_width = thread_pitch - root
         
+        print(f"{root=}")
+        print(f"{angle_space=}")
+        print(f"{thread_pitch=}")
+        
         Trapezoid(
             width=bottom_width, 
             height=thread_depth,  
             left_side_angle = trapezoid_angle,
-            rotation=90)
+            rotation=90,
+            align=(Align.MAX, Align.MIN))
         
     sweep(path=path.line, is_frenet=True, transition=Transition.ROUND, mode=Mode.SUBTRACT)
 
     Cylinder(
-        radius = thread_minor_diameter/2 ,
+        radius = (actual_minor_diameter)/2 ,
         height = rod_thread_length , 
         align=(Align.CENTER, Align.CENTER, Align.MIN),
         mode=Mode.SUBTRACT
@@ -110,5 +117,8 @@ with BuildPart() as cover:
     selection = cover.edges().filter_by(GeomType.CIRCLE).filter_by(lambda r: r.radius == screw_holes_diameter/2 + 0.2).sort_by(Axis.Z)[-8:]
     chamfer(selection, 0.5 * MM)
 cover.part.position = (0,0,rod_top.faces().sort_by(Axis.Z)[-1].center().Z + 10)
+
+export_stl(rod_top.part, "rod_top.stl")
+export_stl(cover.part, "rod_top_cover.stl")
 
 show_all()

@@ -11,7 +11,7 @@ thread_major_diameter = 33 * MM
 thread_minor_diameter = 29.211 * MM
 thread_pitch = 3.5 * MM
 thread_angle = 60
-thread_wiggle_room = 0.4 * MM
+thread_wiggle_room = 1 * MM
 
 base_plate_thickness = 2 * MM
 top_cover_thickness = 2 * MM
@@ -28,8 +28,10 @@ assert outer_diameter > thread_major_diameter
 
 with BuildPart() as rod_top:
     
-    actual_minor_diameter = thread_minor_diameter + thread_wiggle_room
-    r_helix = (actual_minor_diameter - 0.01 * MM) / 2
+    thread_minor_diameter += thread_wiggle_room
+    thread_major_diameter += thread_wiggle_room
+    
+    r_helix = (thread_minor_diameter - 0.01 * MM) / 2
 
     Cone(
         bottom_radius=outer_diameter/2,
@@ -42,7 +44,7 @@ with BuildPart() as rod_top:
         Helix(pitch=thread_pitch, height=rod_thread_length, radius=r_helix)
     
     with BuildSketch(path.line ^ 0) as thread_tooth: 
-        thread_depth = (thread_major_diameter - actual_minor_diameter) / 2    
+        thread_depth = (thread_major_diameter - thread_minor_diameter) / 2    
         trapezoid_angle = 90 - (thread_angle/2)
         angle_space = thread_depth / math.tan(math.radians(trapezoid_angle))
         root = (thread_pitch - 2 * angle_space ) / 2
@@ -62,7 +64,7 @@ with BuildPart() as rod_top:
     sweep(path=path.line, is_frenet=True, transition=Transition.ROUND, mode=Mode.SUBTRACT)
 
     Cylinder(
-        radius = (actual_minor_diameter)/2 ,
+        radius = (thread_minor_diameter)/2 ,
         height = rod_thread_length , 
         align=(Align.CENTER, Align.CENTER, Align.MIN),
         mode=Mode.SUBTRACT

@@ -97,6 +97,10 @@ with BuildPart() as rod_top:
             Circle(radius=screw_holes_diameter/2)
     extrude(amount=-screw_holes_depth, mode=Mode.SUBTRACT)
     
+cable_channel = Cylinder(2*MM, rod_thread_length + nema_17_height - 10 * MM, align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.PRIVATE)
+cable_channel = Pos((nema_17_width / 2) + 1,0, 0) * cable_channel
+rod_top.part = rod_top.part - cable_channel
+    
 
 with BuildPart() as cover: 
     with BuildSketch(): 

@@ -6,11 +6,11 @@ from ocp_vscode import show_all
 # Parameters
 # --------------------
 
-hub_connection_width = 45
+hub_connection_width = 42
 hub_connection_height = 20
-hub_connection_length = 120
+hub_connection_length = 100
 hub_connection_rod_screw_diameter = 3.1
-hub_connection_rod_screw_position_diameter = 200 
+hub_connection_rod_screw_position_diameter = 160 
 
 # NEMA17 mounting pattern
 shaft_diameter = 6.2

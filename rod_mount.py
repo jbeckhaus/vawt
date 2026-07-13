@@ -11,14 +11,14 @@ thread_major_diameter = 33 * MM
 thread_minor_diameter = 29.211 * MM
 thread_pitch = 3.5 * MM
 thread_angle = 60
-thread_wiggle_room = 1 * MM
+thread_wiggle_room = 4 * MM
 
 base_plate_thickness = 2 * MM
 top_cover_thickness = 2 * MM
 
-motor_space_diameter = 62 * MM
-nema_17_width = 42 * MM
-nema_17_height = 42 * MM 
+motor_space_diameter = 64 * MM
+nema_17_width = 42.35 * MM
+nema_17_height = 45.2 * MM
 nema_17_holes_spacing = 31 * MM
 screw_holes_diameter = 3 * MM
 screw_holes_depth = 10 * MM
@@ -97,8 +97,8 @@ with BuildPart() as rod_top:
             Circle(radius=screw_holes_diameter/2)
     extrude(amount=-screw_holes_depth, mode=Mode.SUBTRACT)
     
-cable_channel = Cylinder(2*MM, rod_thread_length + nema_17_height - 10 * MM, align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.PRIVATE)
-cable_channel = Pos((nema_17_width / 2) + 1,0, 0) * cable_channel
+cable_channel = Cylinder(4*MM, rod_thread_length + nema_17_height - 6 * MM, align=(Align.CENTER, Align.CENTER, Align.MIN), mode=Mode.PRIVATE)
+cable_channel = Pos((nema_17_width / 2) + 2,0, 0) * cable_channel
 rod_top.part = rod_top.part - cable_channel
     
 
